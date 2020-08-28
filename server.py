@@ -7,7 +7,7 @@ from discord.ext import commands
 from random import *
 
 #initialize token and client
-TOKEN = "NzQ1MzY2MTAzNzA2MDQyNTIx.XzwuRw.rC87-IS7es_pSBnc_mXVm9L8Ejc"
+TOKEN = "INSERT TOKEN HERE"
 client = commands.Bot(command_prefix="wurf ", case_insensitive=True)
 
 #useful functions
