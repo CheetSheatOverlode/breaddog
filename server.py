@@ -37,7 +37,7 @@ def haveFile(name, folder):
 #####################
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="wurf help"))
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"wurf help | in {len(client.guilds)} servers"))
 
 @client.event
 async def on_guild_join(guild):
