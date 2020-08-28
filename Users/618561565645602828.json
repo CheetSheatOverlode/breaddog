@@ -1,0 +1,64 @@
+{
+    "name": "ProfessorEZ",
+    "discriminator": "5674",
+    "crumbs": 38275,
+    "timeBeg": [
+        2020,
+        8,
+        28,
+        8,
+        54,
+        23
+    ],
+    "timeDaily": [
+        2020,
+        35,
+        4
+    ],
+    "timeWeekly": [
+        2020,
+        35,
+        3
+    ],
+    "timeWork": [
+        2020,
+        1,
+        1,
+        1,
+        1,
+        1
+    ],
+    "dailyStreak": 1,
+    "job": null,
+    "inventory": {},
+    "pets": {},
+    "notifications": {
+        "2020-08-25 18:40:19.612797": "ProfessorJZ#9279 stole 94766 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:20.039624": "ProfessorJZ#9279 stole 46357 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:20.539288": "ProfessorJZ#9279 stole 10455 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:20.918892": "ProfessorJZ#9279 stole 8364 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:21.349554": "ProfessorJZ#9279 tried to steal coins from you in Bread Dog Official, but failed!",
+        "2020-08-25 18:40:21.847222": "ProfessorJZ#9279 stole 13717 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:22.259120": "ProfessorJZ#9279 stole 5132 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:22.790699": "ProfessorJZ#9279 tried to steal coins from you in Bread Dog Official, but failed!",
+        "2020-08-25 18:40:23.317290": "ProfessorJZ#9279 tried to steal coins from you in Bread Dog Official, but failed!",
+        "2020-08-25 18:40:23.774068": "ProfessorJZ#9279 stole 5697 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:29.656365": "ProfessorJZ#9279 stole 2762 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:29.743102": "ProfessorJZ#9279 stole 1783 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:29.853835": "ProfessorJZ#9279 stole 1877 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:30.002439": "ProfessorJZ#9279 stole 1245 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:30.167995": "ProfessorJZ#9279 tried to steal coins from you in Bread Dog Official, but failed!",
+        "2020-08-25 18:40:30.255731": "ProfessorJZ#9279 stole 336 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:32.329215": "ProfessorJZ#9279 stole 354 coins from you in Bread Dog Official!",
+        "2020-08-25 18:40:32.844840": "ProfessorJZ#9279 stole 127 coins from you in Bread Dog Official!",
+        "2020-08-26 11:08:13.498120": "UR ORCA DEV#1326 sent you 480 crumbs in Bread Dog Official!",
+        "2020-08-26 12:56:33.476540": "ProfessorJZ#9279 sent you 16446 crumbs in Bread Dog Official!",
+        "2020-08-26 13:03:53.850265": "ProfessorJZ#9279 sent you 1000 crumbs in Bread Dog Official!",
+        "2020-08-26 13:03:55.736818": "ProfessorJZ#9279 sent you 1000 crumbs in Bread Dog Official!",
+        "2020-08-26 13:03:57.585534": "ProfessorJZ#9279 tried to send you 1000 crumbs in Bread Dog Official, but the shipment was attacked by pirates on the way, and only 550 crumbs got to you!",
+        "2020-08-26 13:04:03.476395": "ProfessorJZ#9279 tried to send you 1000 crumbs in Bread Dog Official, but the shipment was attacked by pirates on the way, and only 530 crumbs got to you!",
+        "2020-08-26 13:04:05.007931": "ProfessorJZ#9279 tried to send you 1000 crumbs in Bread Dog Official, but the shipment was attacked by pirates on the way, and only 420 crumbs got to you!",
+        "2020-08-26 15:27:18.287133": "MaZZiu#0444 sent you -1203020402304 crumbs in Orca Bots Official!",
+        "2020-08-26 15:28:04.272486": "MaZZiu#0444 sent you 34243124123 crumbs in Bread Dog Official!"
+    }
+}
