@@ -105,7 +105,7 @@ class Utility(commands.Cog):
         help="Displays your user ID.",
         brief="Displays your user ID."
     )
-    async def userId(self, ctx, user:discord.Member=None):
+    async def findUserId(self, ctx, user:discord.Member=None):
         if not(user):
             user = ctx.message.author
         await ctx.channel.send(f"The user ID for {user} is: {user.id}")
@@ -579,11 +579,89 @@ class Economy(commands.Cog):
                 await ctx.channel.send(f"{ctx.message.author}, the person you're trying to give crumbs to doesn't have an account. Hence, they probably won't use it.")
         else:
             await ctx.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`.")
+    
+
+    @commands.command(
+        help="Look for a job!",
+        brief="Look for a job!"
+    )
+    async def apply(self, ctx, job:str=None):
+        jobs = [
+            ("Janitor", 100, 1000),
+            ("Cashier", 200, 2500),
+            ("Chef", 250, 5000),
+            ("Teacher", 500, 10000),
+            ("Librarian", 1000, 20000),
+            ("Nurse", 1500, 50000),
+            ("Doctor", 2000, 100000),
+            ("Bread Dog Developer", 10000, 100000000)
+        ]
+        userId = ctx.message.author.id
+        if haveFile(str(userId), "Users"):
+            userData = readFromFile("Users\\" + str(userId) + ".json")
+            if not(job):
+                msg = []
+                for j in jobs:
+                    msg.append(str(j[0])+":\n"+"Salary = "+str(j[1])+"\n"+"Application Price = "+str(j[2])+"\n")
+                message = "\n".join(msg) + "\nApply for a job by doing `wurf apply <job>`."
+                final = discord.Embed(title="The current jobs are:", description=message, color=0xffaaff)
+                await ctx.message.channel.send(embed=final)
+            else:
+                hasJob = False
+                for i in jobs:
+                    if i[0] == job.capitalize():
+                        hasJob = True
+                        jobIndex = jobs.index(i)
+                if hasJob:
+                    if userData["crumbs"] >= jobs[jobIndex][2]:
+                        userData["crumbs"] -= jobs[jobIndex][2]
+                        userData["job"] = jobs[jobIndex][0]
+                        saveToFile("Users\\" + str(userId) + ".json", userData)
+                        await ctx.message.channel.send(f"{ctx.message.author} is now working as a **{jobs[jobIndex][0]}**!")
+                    else:
+                        await ctx.message.channel.send(f"{ctx.message.author}, can't you do the math? You can't afford to apply for that job!")
+                else:
+                    await ctx.message.channel.send(f"{ctx.message.author}, that is not a valid job. Check the list my doing `wurf apply`.")
+        else:
+            await ctx.message.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`")
         
-    
-    
 
-
+    @commands.command(
+        help="Work for some bread crumbs!",
+        brief="Work for some bread crumbs."
+    )
+    async def work(self, ctx):
+        jobs = [
+            ("Janitor", 100, 1000),
+            ("Cashier", 200, 2500),
+            ("Chef", 250, 5000),
+            ("Teacher", 500, 10000),
+            ("Librarian", 1000, 20000),
+            ("Nurse", 1500, 50000),
+            ("Doctor", 2000, 100000),
+            ("Bread Dog Developer", 10000, 100000000)
+        ]
+        userId = ctx.message.author.id
+        if haveFile(str(userId), "Users"):
+            userData = readFromFile("Users\\" + str(userId) + ".json")
+            if userData["job"]:
+                for i in jobs:
+                    if i[0] == userData["job"].capitalize():
+                        jobIndex = jobs.index(i)
+                today = datetime.datetime.today()
+                now = (int(today.year), int(today.month), int(today.day), int(today.hour), int(today.minute), int(today.second))
+                lastWork = datetime.datetime(userData["timeWork"][0], userData["timeWork"][1], userData["timeWork"][2], userData["timeWork"][3], userData["timeWork"][4], userData["timeWork"][5])
+                if ((datetime.datetime(int(today.year), int(today.month), int(today.day), int(today.hour), int(today.minute), int(today.second)) - lastWork).total_seconds() / 3600) >= 1:
+                    userData["crumbs"] += jobs[jobIndex][1]
+                    userData["timeWork"] = now
+                    saveToFile("Users\\" + str(userId) + ".json", userData)
+                    await ctx.message.channel.send(f"{ctx.message.author} worked for a **{jobs[jobIndex][0]}** for an hour, and earned **{jobs[jobIndex][1]}** coins.")
+                else:
+                    await ctx.message.channel.send(f"{ctx.message.author}, you already worked this hour.")
+            else:
+                await ctx.message.channel.send(f"{ctx.message.author}, you don't have a job yet. Get one by doing `wurf apply`")
+        else:
+            await ctx.message.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`")
 
 
 
