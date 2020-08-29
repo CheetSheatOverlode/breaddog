@@ -594,7 +594,7 @@ class Economy(commands.Cog):
             ("Librarian", 1000, 20000),
             ("Nurse", 1500, 50000),
             ("Doctor", 2000, 100000),
-            ("Bread Dog Developer", 10000, 100000000)
+            ("Bread Dog Developer", 20000, 100000000)
         ]
         userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
@@ -639,7 +639,7 @@ class Economy(commands.Cog):
             ("Librarian", 1000, 20000),
             ("Nurse", 1500, 50000),
             ("Doctor", 2000, 100000),
-            ("Bread Dog Developer", 10000, 100000000)
+            ("Bread Dog Developer", 20000, 100000000)
         ]
         userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):

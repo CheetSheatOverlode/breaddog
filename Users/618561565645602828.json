@@ -1,14 +1,14 @@
 {
     "name": "ProfessorEZ",
     "discriminator": "5674",
-    "crumbs": 38275,
+    "crumbs": 37774,
     "timeBeg": [
         2020,
         8,
         28,
-        8,
-        54,
-        23
+        16,
+        1,
+        36
     ],
     "timeDaily": [
         2020,
@@ -22,14 +22,14 @@
     ],
     "timeWork": [
         2020,
-        1,
-        1,
-        1,
-        1,
-        1
+        8,
+        28,
+        16,
+        26,
+        26
     ],
     "dailyStreak": 1,
-    "job": null,
+    "job": "Janitor",
     "inventory": {},
     "pets": {},
     "notifications": {
