@@ -80,7 +80,7 @@ class Utility(commands.Cog):
         brief="Run Python commands!"
     )
     async def python(self, ctx, *, code):
-        if ("input(" not in str(code)) and ("while" not in str(code) and "echo" not in str(code)):
+        if ("input(" not in str(code)) and ("while" not in str(code) and '"^"^"' not in str(code)):
             os.system(f"echo {code} > shell.py")
             output = os.popen("python shell.py").readlines()
             output = "".join(output)
