@@ -80,14 +80,14 @@ class Utility(commands.Cog):
         brief="Run Python commands!"
     )
     async def python(self, ctx, *, code):
-        if ("input(" not in str(code)) and ("while" not in str(code)):
+        if ("input(" not in str(code)) and ("while" not in str(code) and "echo" not in str(code)):
             os.system(f"echo {code} > shell.py")
             output = os.popen("python shell.py").readlines()
             output = "".join(output)
             await ctx.channel.send("`"+output+"`")
             os.system("del shell.py")
         else:
-            await ctx.channel.send("Yo I can't do that are you trying to make me run forever? Idiots.")
+            await ctx.channel.send("Yo I can't do that are you trying to make me run forever or exploit me? Idiots.")
 
     @commands.command(
         help="Flip a coin!",
