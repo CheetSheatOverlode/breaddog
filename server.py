@@ -166,6 +166,15 @@ class Extra(commands.Cog):
     )
     async def wurf(self, message):
         await message.channel.send("Wurf Wurf Wurf!")
+    
+
+    @commands.command(
+        help="Look at the code for this bot on GitHub! Please don't try to copy our bot, you can make parodies, but no direct copies. Thank you!",
+        brief="Check out our code! All rights reserved.",
+        aliases=["source", "sourceCode", "gitHub"]
+    )
+    async def code(self, ctx):
+        await ctx.message.channel.send(f"{ctx.message.author}, the code for this bot can be found here:\nhttps://github.com/CheetSheatOverlode/breaddog\nAll rights reserved. You can take the code to make a parody of our bot, but you may not directly copy it.")
 
 
 
