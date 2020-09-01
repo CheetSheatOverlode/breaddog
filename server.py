@@ -80,12 +80,16 @@ class Utility(commands.Cog):
         brief="Run Python commands!"
     )
     async def python(self, ctx, *, code):
-        if ("input(" not in str(code)) and ("while" not in str(code) and '"^"^"' not in str(code)):
-            os.system(f"echo {code} > shell.py")
-            output = os.popen("python shell.py").readlines()
-            output = "".join(output)
+        if ("input(" not in str(code)):
+            try:
+                compile(code, 'script', 'eval')
+                os.system(f"echo {code} > shell.py")
+                output = os.popen("python shell.py").readlines()
+                output = "".join(output).rstrip()
+                os.system("del shell.py")
+            except Exception as e:
+                output = str(e)
             await ctx.channel.send("`"+output+"`")
-            os.system("del shell.py")
         else:
             await ctx.channel.send("Yo I can't do that are you trying to make me run forever or exploit me? Idiots.")
 
