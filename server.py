@@ -655,7 +655,7 @@ class Economy(commands.Cog):
             userData = readFromFile("Users\\" + str(userId) + ".json")
             if userData["job"]:
                 for i in jobs:
-                    if i[0] == userData["job"].capitalize():
+                    if i[0] == userData["job"]:
                         jobIndex = jobs.index(i)
                 today = datetime.datetime.today()
                 now = (int(today.year), int(today.month), int(today.day), int(today.hour), int(today.minute), int(today.second))
