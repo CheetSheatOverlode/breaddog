@@ -3,8 +3,10 @@ import discord
 import os
 import json
 import datetime
-from discord.ext import commands
+from discord.ext import commands, tasks
 from random import *
+from asyncio import time
+from tasks import loop
 
 #initialize token and client
 TOKEN = "INSERT TOKEN HERE"
@@ -45,7 +47,13 @@ async def on_guild_join(guild):
     owner = guild.owner
     await owner.send("Hello, my name is **Bread Dog**, a fat bot jam-packed with functionality. The bot has the following: \nA moderation system that can: Kick, Warn, Mute, Ban \nA utility system that can: Display Ping, Guild ID, User ID, and run Python shell commands \nAnd an economy system that can: Setup, Daily, Weekly, Rob, Give, and bet (with more to come) ^^ \n Not sure what to do? Simply type `wurf help`!")
 
-
+@loop(seconds=5)
+async def name_change():
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"wurf help"))
+    await sleep(5)
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(client.guilds)} servers"))
+    await sleep(5)
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"with {len(os.listdir("Users"))}"))
 
 
 
@@ -680,7 +688,8 @@ class Economy(commands.Cog):
             await ctx.message.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`")
 
 
-
+name_change.before_loop(client.wait_until_ready())    
+name_change.start()
 client.add_cog(Utility(client))
 client.add_cog(Extra(client))
 client.add_cog(Moderation(client))
