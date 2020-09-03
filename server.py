@@ -80,18 +80,21 @@ class Utility(commands.Cog):
         brief="Run Python commands!"
     )
     async def python(self, ctx, *, code):
-        if ("input(" not in str(code) and "&&" not in str(code) and "||" not in str(code)):
-            try:
-                compile(code, 'script', 'eval')
-                os.system(f"echo {code} > shell.py")
-                output = os.popen("python shell.py").readlines()
-                output = "".join(output).rstrip()
-                os.system("del shell.py")
-            except Exception as e:
-                output = str(e)
-            await ctx.channel.send("`"+output+"`")
+        if ("input(" not in str(code)):
+            if "&" not in str(code) and "|" not in str(code))
+                try:
+                    compile(code, 'script', 'eval')
+                    os.system(f"echo {code} > shell.py")
+                    output = os.popen("python shell.py").readlines()
+                    output = "".join(output).rstrip()
+                    os.system("del shell.py")
+                except Exception as e:
+                    output = str(e)
+                await ctx.channel.send("`"+output+"`")
+            else:
+                await ctx.message.channel.send(f"Your code contains a blacklisted function/character, it may be dangerous to run.")
         else:
-            await ctx.channel.send("Yo I can't do that are you trying to make me run forever or exploit me? Idiots.")
+            await ctx.channel.send("Yo I can't do that are you trying to break me? Idiots.")
 
     @commands.command(
         help="Flip a coin!",
