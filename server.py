@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 from random import *
 
 #initialize token and client
-TOKEN = "INSERT TOKEN HERE"
+TOKEN = "INSERT TOkEN HERE"
 client = commands.Bot(command_prefix="wurf ", case_insensitive=True)
 
 #useful functions
@@ -43,7 +43,8 @@ async def on_ready():
 async def on_guild_join(guild):
     print(f"Bot was added to a new server called {guild}! Bot is now in {len(client.guilds)} guilds!")
     owner = guild.owner
-    await owner.send("Hello, my name is **Bread Dog**, a fat bot jam-packed with functionality. The bot has the following: \nA moderation system that can: Kick, Warn, Mute, Ban \nA utility system that can: Display Ping, Guild ID, User ID, and run Python shell commands \nAnd an economy system that can: Setup, Daily, Weekly, Rob, Give, and bet (with more to come) ^^ \n Not sure what to do? Simply type `wurf help`!")
+    await owner.send("Hello, my name is **Bread Dog**, a fat bot jam-packed with functionality. The bot has the following: \nA moderation system that can: Kick, Warn, Mute, Ban \nA utility system that can run Python shell commands \nAnd a fun economy system ^^ \nNot sure what to do? Simply type `wurf help`!")
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"wurf help | in {len(client.guilds)} servers"))
 
 
 
@@ -239,8 +240,8 @@ class Moderation(commands.Cog):
         reason = 'None specified'
         a.reverse()
         for r in a:
-            if r not in member.roles:
-                if r in ctx.message.author.roles:
+            if r in member.roles:
+                if r not in ctx.message.author.roles:
                     try:
                         channel = await member.create_dm()
                         await channel.send(
@@ -352,14 +353,24 @@ class Economy(commands.Cog):
         brief="Check your balance!",
         aliases=["bal", "amount", "crumbs"]
     )
-    async def balance(self, ctx):
-        userId = ctx.message.author.id
+    async def balance(self, ctx, member:discord.Member=None):
+        try:
+            userId = member.id
+        except:
+            userId = ctx.message.author.id
+        if not(member):
+            member = ctx.message.author
+            userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
-            userData = readFromFile("Users\\" + str(ctx.message.author.id) + ".json")
+            userData = readFromFile("Users\\" + str(userId) + ".json")
             balance = userData["crumbs"]
-            await ctx.channel.send(f"{ctx.message.author}'s balance:\n{balance} bread crumbs.")
+            await ctx.channel.send(f"{member}'s balance:\n{balance} bread crumbs.")
         else:
-            await ctx.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`.")
+            if member == ctx.message.author:
+                await ctx.channel.send(f"{member}, you don't have a balance yet. You can get one by doing `wurf setup`.")
+            else:
+                await ctx.channel.send(f"{member} doesn't have a balance in Bread Dog!")
+            
     
 
     @commands.command(
@@ -483,6 +494,9 @@ class Economy(commands.Cog):
         if str(targetId) == "618561565645602828" or str(targetId) == "699659941572640788":
             await ctx.channel.send(f"Trying to rob the devs, {ctx.message.author}? Seriously? They work their butts off to bring you this good game, and this is how you repay them? By robbing them? Screw off.")
             return
+        elif targetId == userId:
+            await ctx.channel.send(f"{ctx.message.author} WHAAAAT you want to rob yourself?")
+            return
         if haveFile(str(userId), "Users"):
             if haveFile(str(targetId), "Users"):
                 userData = readFromFile("Users\\" + str(userId) + ".json")
@@ -559,13 +573,18 @@ class Economy(commands.Cog):
     async def give(self, ctx, target:discord.Member=None, amount:int=None):
         if not(target):
             await ctx.channel.send(f"{ctx.message.author} sure thing, but tell me someone to share with, ok? Don't make me keep the money for myself.")
+            return
         elif not(amount):
             await ctx.channel.send(f"{ctx.message.author} ok but how much am I supposed to send? Grrrr people these days.")
+            return
         elif amount < 1:
             await ctx.channel.send(f"{ctx.message.author} what? You tryna break or cheat me? Hmmmph.")
             return
         userId = ctx.message.author.id
         targetId = target.id
+        if userId == targetId:
+            await ctx.channel.send(f"{ctx.message.author} Yo you can't give yourself coins ok that's called cheating stop it")
+            return
         if haveFile(str(userId), "Users"):
             if haveFile(str(targetId), "Users"):
                 userData = readFromFile("Users\\" + str(userId) + ".json")
@@ -677,7 +696,6 @@ class Economy(commands.Cog):
                 await ctx.message.channel.send(f"{ctx.message.author}, you don't have a job yet. Get one by doing `wurf apply`")
         else:
             await ctx.message.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`")
-
 
 client.add_cog(Utility(client))
 client.add_cog(Extra(client))
