@@ -80,8 +80,8 @@ class Utility(commands.Cog):
         brief="Run Python commands!"
     )
     async def python(self, ctx, *, code):
-        if ("input(" not in str(code)):
-            if "&" not in str(code) and "|" not in str(code):
+        if ("input(" not in str(code) and "while" not in str(code)):
+            if "&" not in str(code) and "|" not in str(code) and "%" not in str(code):
                 try:
                     compile(code, 'script', 'eval')
                     os.system(f"echo {code} > shell.py")
