@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 from random import *
 
 #initialize token and client
-TOKEN = "INSERT TOkEN HERE"
+TOKEN = "INSERT TOKEN HERE"
 client = commands.Bot(command_prefix="wurf ", case_insensitive=True)
 
 #useful functions
@@ -336,6 +336,7 @@ class Economy(commands.Cog):
                 "timeDaily":(2020, 1, 1),
                 "timeWeekly":(2020, 1, 1),
                 "timeWork":(2020, 1, 1, 1, 1, 1),
+                "timeRob":(2020, 1, 1, 1, 1, 1),
                 "dailyStreak":0,
                 "job":None,
                 "inventory":{},
@@ -503,11 +504,20 @@ class Economy(commands.Cog):
                 targetData = readFromFile("Users\\" + str(targetId) + ".json")
                 if userData["crumbs"] >= 500:
                     if targetData["crumbs"] >= 500:
-                        if randint(1, 10) >= 4:
+                        if "timeRob" not in userData:
+                            userData["timeRob"] = (2020, 1, 1, 1, 1, 1)
+                        today = datetime.datetime.today()
+                        now = (int(today.year), int(today.month), int(today.day), int(today.hour), int(today.minute), int(today.second))
+                        lastRob = datetime.datetime(userData["timeRob"][0], userData["timeRob"][1], userData["timeRob"][2], userData["timeRob"][3], userData["timeRob"][4], userData["timeRob"][5])
+                        if not ((datetime.datetime(int(today.year), int(today.month), int(today.day), int(today.hour), int(today.minute), int(today.second)) - lastRob).seconds / 60) > 5:
+                            await ctx.channel.send(f"{ctx.message.author}, you already robbed someone in the last five minutes. Take a break, or you're gonna get busted.")
+                            return
+                        if randint(1, 10) >= 3:
                             percent = randrange(20, 50)
                             amount = int(targetData["crumbs"] * percent * 0.01)
                             targetData["crumbs"] -= amount
                             userData["crumbs"] += amount
+                            userData["timeRob"] = now
                             targetData["notifications"][str(datetime.datetime.now())] = f"{ctx.message.author} stole {amount} crumbs from you in {ctx.message.guild}!"
                             saveToFile("Users\\" + str(userId) + ".json", userData)
                             saveToFile("Users\\" + str(targetId) + ".json", targetData)
