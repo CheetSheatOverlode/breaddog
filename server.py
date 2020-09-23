@@ -5,6 +5,11 @@ import json
 import datetime
 from discord.ext import commands, tasks
 from random import *
+from RestrictedPython import compile_restricted
+from RestrictedPython import safe_globals
+import sys
+from io import StringIO
+import contextlib
 
 #initialize token and client
 TOKEN = "INSERT TOKEN HERE"
@@ -30,6 +35,16 @@ def haveFile(name, folder):
             pass
     return False
 
+
+#Restricted Python Context Manager
+@contextlib.contextmanager
+def stdoutIO(stdout=None):
+    old = sys.stdout
+    if stdout is None:
+        stdout = StringIO()
+    sys.stdout = stdout
+    yield stdout
+    sys.stdout = old
 
 
 #####################
@@ -83,14 +98,14 @@ class Utility(commands.Cog):
         if ("input(" not in str(code) and "while" not in str(code)):
             if "&" not in str(code) and "|" not in str(code) and "%" not in str(code):
                 try:
-                    compile(code, 'script', 'eval')
-                    os.system(f"echo {code} > shell.py")
-                    output = os.popen("python shell.py").readlines()
-                    output = "".join(output).rstrip()
-                    os.system("del shell.py")
+                    loc = {}
+                    byte_code = compile_restricted(code, '<inline>', 'exec')
+                    with stdoutIO() as s:
+                        exec(byte_code, safe_globals, loc)
+                    output = s.getvalue()
                 except Exception as e:
                     output = str(e)
-                await ctx.channel.send("`"+output+"`")
+                await ctx.channel.send("```\n"+output+"\n```")
             else:
                 await ctx.message.channel.send(f"Your code contains a blacklisted function/character, it may be dangerous to run.")
         else:
