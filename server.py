@@ -5,8 +5,8 @@ import json
 import datetime
 from discord.ext import commands, tasks
 from random import *
-from RestrictedPython import compile_restricted
-from RestrictedPython import safe_globals
+import RestrictedPython
+from RestrictedPython.Guards import safe_builtins
 import sys
 from io import StringIO
 import contextlib
@@ -36,6 +36,10 @@ def haveFile(name, folder):
     return False
 
 
+def sortCrumbs(array):
+    return array[1]
+
+
 #Restricted Python Context Manager
 @contextlib.contextmanager
 def stdoutIO(stdout=None):
@@ -58,7 +62,7 @@ async def on_ready():
 async def on_guild_join(guild):
     print(f"Bot was added to a new server called {guild}! Bot is now in {len(client.guilds)} guilds!")
     owner = guild.owner
-    await owner.send("Hello, my name is **Bread Dog**, a fat bot jam-packed with functionality. The bot has the following: \nA moderation system that can: Kick, Warn, Mute, Ban \nA utility system that can run Python shell commands \nAnd a fun economy system ^^ \nNot sure what to do? Simply type `wurf help`!")
+    await owner.send("Hello, my name is **Bread Dog**, a fat bot jam-packed with functionality. The bot has the following: \nA moderation system that can: Kick, Warn, Mute, Ban \nA utility system for flipping coins, and other commonly needed functions \nAnd a fun economy system ^^ \nNot sure what to do? Simply type `wurf help`!")
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"wurf help | in {len(client.guilds)} servers"))
 
 
@@ -89,27 +93,6 @@ class Utility(commands.Cog):
         else:
             embed=discord.Embed(title="PING", description=f":ping_pong: Pingpingpingpingping! The ping is **{round(client.latency *1000)}** milliseconds!", color=0x990000)
         await ctx.send(embed=embed)
-
-    @commands.command(
-        help="Run a single line command in python shell, and get the result.",
-        brief="Run Python commands!"
-    )
-    async def python(self, ctx, *, code):
-        if ("input(" not in str(code) and "while" not in str(code)):
-            if "&" not in str(code) and "|" not in str(code) and "%" not in str(code):
-                try:
-                    loc = {}
-                    byte_code = compile_restricted(code, '<inline>', 'exec')
-                    with stdoutIO() as s:
-                        exec(byte_code, safe_globals, loc)
-                    output = s.getvalue()
-                except Exception as e:
-                    output = str(e)
-                await ctx.channel.send("```\n"+output+"\n```")
-            else:
-                await ctx.message.channel.send(f"Your code contains a blacklisted function/character, it may be dangerous to run.")
-        else:
-            await ctx.channel.send("Yo I can't do that are you trying to break me? Idiots.")
 
     @commands.command(
         help="Flip a coin!",
@@ -196,8 +179,7 @@ class Extra(commands.Cog):
         aliases=["source", "sourceCode", "gitHub"]
     )
     async def code(self, ctx):
-        await ctx.message.channel.send(f"{ctx.message.author}, the code for this bot can be found here:\nhttps://github.com/CheetSheatOverlode/breaddog\nAll rights reserved. You can take the code to make a parody of our bot, but you may not directly copy it.")
-
+        await ctx.channel.send(f"{ctx.message.author}, the code for this bot can be found here:\nhttps://github.com/CheetSheatOverlode/breaddog\nAll rights reserved. You can take the code to make a parody of our bot, but you may not directly copy it.")
 
 
 
@@ -507,7 +489,7 @@ class Economy(commands.Cog):
             await ctx.channel.send(f"{ctx.message.author} you gotta mention someone to rob, right?")
             return
         targetId = target.id
-        if str(targetId) == "618561565645602828" or str(targetId) == "699659941572640788":
+        if str(targetId) == "699659941572640788":
             await ctx.channel.send(f"Trying to rob the devs, {ctx.message.author}? Seriously? They work their butts off to bring you this good game, and this is how you repay them? By robbing them? Screw off.")
             return
         elif targetId == userId:
@@ -664,7 +646,7 @@ class Economy(commands.Cog):
                     msg.append(str(j[0])+":\n"+"Salary = "+str(j[1])+"\n"+"Application Price = "+str(j[2])+"\n")
                 message = "\n".join(msg) + "\nApply for a job by doing `wurf apply <job>`."
                 final = discord.Embed(title="The current jobs are:", description=message, color=0xffaaff)
-                await ctx.message.channel.send(embed=final)
+                await ctx.channel.send(embed=final)
             else:
                 hasJob = False
                 for i in jobs:
@@ -676,13 +658,13 @@ class Economy(commands.Cog):
                         userData["crumbs"] -= jobs[jobIndex][2]
                         userData["job"] = jobs[jobIndex][0]
                         saveToFile("Users\\" + str(userId) + ".json", userData)
-                        await ctx.message.channel.send(f"{ctx.message.author} is now working as a **{jobs[jobIndex][0]}**!")
+                        await ctx.channel.send(f"{ctx.message.author} is now working as a **{jobs[jobIndex][0]}**!")
                     else:
-                        await ctx.message.channel.send(f"{ctx.message.author}, can't you do the math? You can't afford to apply for that job!")
+                        await ctx.channel.send(f"{ctx.message.author}, can't you do the math? You can't afford to apply for that job!")
                 else:
-                    await ctx.message.channel.send(f"{ctx.message.author}, that is not a valid job. Check the list my doing `wurf apply`.")
+                    await ctx.channel.send(f"{ctx.message.author}, that is not a valid job. Check the list my doing `wurf apply`.")
         else:
-            await ctx.message.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`")
+            await ctx.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`")
         
 
     @commands.command(
@@ -714,13 +696,115 @@ class Economy(commands.Cog):
                     userData["crumbs"] += jobs[jobIndex][1]
                     userData["timeWork"] = now
                     saveToFile("Users\\" + str(userId) + ".json", userData)
-                    await ctx.message.channel.send(f"{ctx.message.author} worked for a **{jobs[jobIndex][0]}** for an hour, and earned **{jobs[jobIndex][1]}** coins.")
+                    await ctx.channel.send(f"{ctx.message.author} worked for a **{jobs[jobIndex][0]}** for an hour, and earned **{jobs[jobIndex][1]}** coins.")
                 else:
-                    await ctx.message.channel.send(f"{ctx.message.author}, you already worked this hour.")
+                    await ctx.channel.send(f"{ctx.message.author}, you already worked this hour.")
             else:
-                await ctx.message.channel.send(f"{ctx.message.author}, you don't have a job yet. Get one by doing `wurf apply`")
+                await ctx.channel.send(f"{ctx.message.author}, you don't have a job yet. Get one by doing `wurf apply`")
         else:
-            await ctx.message.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`")
+            await ctx.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`")
+    
+
+    @commands.command(
+        help="Check out the richest people in your server!",
+        brief="Check out the rich leaderboard for your server.",
+        aliases=["leaderboard"]
+    )
+    async def rich(self, ctx):
+        memberList = []
+        for member in ctx.guild.members:
+            userId = member.id
+            test = haveFile(str(userId), "Users")
+            if test:
+                memberList.append(member)
+        for i in memberList:
+            userData = readFromFile("Users\\" + str(i.id) + ".json")
+            crumbs = userData["crumbs"]
+            memberList[memberList.index(i)] = (str(i.name)+str(i.discriminator), crumbs)
+        memberList.sort(reverse=True, key=sortCrumbs)
+        memberList = memberList[:10]
+        richList = [f"{i[0]} - {i[1]}" for i in memberList]
+        lineBreak = "\n"
+        await ctx.channel.send(f"Top 10 Richest people in {ctx.guild}: \n{lineBreak.join(richList)}")
+    
+
+    @commands.command(
+        help="Check out what we have in the store! Buy some stuff!",
+        brief="Check out the store!",
+        aliases=["store", "market"]
+    )
+    async def shop(self, ctx):
+        shopDict = {
+            "Food":10,
+            "Bread Loaf":20,
+            "Corgi Plush":50,
+            "Beer":1000,
+            "Phone":5000,
+            "Bitoin":10000,
+        }
+        lis = [f"{key} - {shopDict[key]}" for key in shopDict.keys()]
+        lineBreak = "\n"
+        await ctx.channel.send(f"Bread Dog store: \n{lineBreak.join(lis)}")
+    
+
+    @commands.command(
+        help="Buy something from the store!",
+        brief="Buy something form the store!",
+        aliases=["purchase"]
+    )
+    async def buy(self, ctx, item:str=None, amount:int=1):
+        shopDict = {
+            "Food":10,
+            "Bread_Loaf":20,
+            "Corgi_Plush":50,
+            "Beer":1000,
+            "Phone":5000,
+            "Bitoin":10000,
+        }
+        userId = ctx.message.author.id
+        if amount < 1:
+            await ctx.channel.send(f"{ctx.message.author} yo stop wasting my time if you want to sell ur stuff then sell ur stuff don't buy negative")
+        if haveFile(str(userId), "Users"):
+            if item:
+                if item in shopDict.keys():
+                    userData = readFromFile("Users\\" + str(userId) + ".json")
+                    if userData["crumbs"] >= shopDict[item]:
+                        if item in userData["inventory"].keys():
+                            userData["crumbs"] -= shopDict[item]*amount
+                            userData["inventory"][item] += amount
+                        else:
+                            userData["crumbs"] -= shopDict[item]*amount
+                            userData["inventory"][item] = amount
+                        saveToFile("Users\\" + str(userId) + ".json", userData)
+                        await ctx.channel.send(f"{ctx.message.author} successfully purchased {amount} {item}")
+                    else:
+                        await ctx.channel.send(f"{ctx.message.author} broke kid get out you can't even afford what you're trying to buy ok")
+                else:
+                    await ctx.channel.send(f"{ctx.message.author}, that item isnt' in the shop. Make sure you capitalized everything.")
+            else:
+                await ctx.channel.send(f"{ctx.message.author}, ok but what are you going to buy?")
+        else:
+            await ctx.channel.send(f"{ctx.message.author}, you don't have a Bread Dog account yet. You can get one by typing `wurf setup`.")
+    
+
+    @commands.command(
+        help="Check out your inventory!",
+        brief="Check out your inventory!",
+        aliases=["inv", "backpack"]
+    )
+    async def inventory(self, ctx):
+        userId = ctx.message.author.id
+        if haveFile(str(userId), "Users"):
+            userData = readFromFile("Users\\" + str(userId) + ".json")
+            inv = userData["inventory"]
+            invList = [f"{key} - {inv[key]}" for key in inv.keys()]
+            invList.sort()
+            lineBreak="\n"
+            await ctx.channel.send(f"{ctx.message.author}'s inventory: \n{lineBreak.join(invList)}")
+        else:
+            await ctx.channel.send(f"{ctx.message.author}, you don't have a Bread Dog account yet. You can get one by typing `wurf setup`.")
+
+
 
 client.add_cog(Utility(client))
 client.add_cog(Extra(client))
