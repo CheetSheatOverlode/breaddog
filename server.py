@@ -62,10 +62,8 @@ async def on_ready():
 async def on_guild_join(guild):
     print(f"Bot was added to a new server called {guild}! Bot is now in {len(client.guilds)} guilds!")
     owner = guild.owner
-    await owner.send("Hello, my name is **Bread Dog**, a fat bot jam-packed with functionality. The bot has the following: \nA moderation system that can: Kick, Warn, Mute, Ban \nA utility system for flipping coins, and other commonly needed functions \nAnd a fun economy system ^^ \nNot sure what to do? Simply type `wurf help`!")
+    await owner.send(f"Hello, my name is **Bread Dog**, a fat bot jam-packed with functionality. \nI was recently added to your server {guild}. The bot has the following: \nA moderation system that can: Kick, Warn, Mute, Ban \nA utility system for flipping coins, and other commonly needed functions \nAnd a fun economy system ^^ \nNot sure what to do? Simply type `wurf help`!")
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"wurf help | in {len(client.guilds)} servers"))
-
-
 
 
 
@@ -720,7 +718,7 @@ class Economy(commands.Cog):
         for i in memberList:
             userData = readFromFile("Users\\" + str(i.id) + ".json")
             crumbs = userData["crumbs"]
-            memberList[memberList.index(i)] = (str(i.name)+str(i.discriminator), crumbs)
+            memberList[memberList.index(i)] = (str(i.name)+"#"+str(i.discriminator), crumbs)
         memberList.sort(reverse=True, key=sortCrumbs)
         memberList = memberList[:10]
         richList = [f"{i[0]} - {i[1]}" for i in memberList]
@@ -736,11 +734,11 @@ class Economy(commands.Cog):
     async def shop(self, ctx):
         shopDict = {
             "Food":10,
-            "Bread Loaf":20,
-            "Corgi Plush":50,
+            "Bread_Loaf":20,
+            "Corgi_Plush":50,
             "Beer":1000,
             "Phone":5000,
-            "Bitoin":10000,
+            "Bitcoin":10000,
         }
         lis = [f"{key} - {shopDict[key]}" for key in shopDict.keys()]
         lineBreak = "\n"
@@ -759,22 +757,24 @@ class Economy(commands.Cog):
             "Corgi_Plush":50,
             "Beer":1000,
             "Phone":5000,
-            "Bitoin":10000,
+            "Bitcoin":10000,
         }
         userId = ctx.message.author.id
         if amount < 1:
             await ctx.channel.send(f"{ctx.message.author} yo stop wasting my time if you want to sell ur stuff then sell ur stuff don't buy negative")
+            return
         if haveFile(str(userId), "Users"):
             if item:
                 if item in shopDict.keys():
                     userData = readFromFile("Users\\" + str(userId) + ".json")
-                    if userData["crumbs"] >= shopDict[item]:
+                    if userData["crumbs"] >= shopDict[item]*amount:
                         if item in userData["inventory"].keys():
                             userData["crumbs"] -= shopDict[item]*amount
                             userData["inventory"][item] += amount
                         else:
                             userData["crumbs"] -= shopDict[item]*amount
-                            userData["inventory"][item] = amount
+                            userData["inventory"][item] = 0
+                            userData["inventory"][item] += amount
                         saveToFile("Users\\" + str(userId) + ".json", userData)
                         await ctx.channel.send(f"{ctx.message.author} successfully purchased {amount} {item}")
                     else:
@@ -800,6 +800,8 @@ class Economy(commands.Cog):
             invList = [f"{key} - {inv[key]}" for key in inv.keys()]
             invList.sort()
             lineBreak="\n"
+            if not(inv):
+                invList = ["Inventory is Empty!"]
             await ctx.channel.send(f"{ctx.message.author}'s inventory: \n{lineBreak.join(invList)}")
         else:
             await ctx.channel.send(f"{ctx.message.author}, you don't have a Bread Dog account yet. You can get one by typing `wurf setup`.")
