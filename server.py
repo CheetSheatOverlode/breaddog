@@ -5,14 +5,10 @@ import json
 import datetime
 from discord.ext import commands, tasks
 from random import *
-import RestrictedPython
-from RestrictedPython.Guards import safe_builtins
 import sys
-from io import StringIO
-import contextlib
 
 #initialize token and client
-TOKEN = "INSERT TOKEN HERE"
+TOKEN = "NzQ1MzY2MTAzNzA2MDQyNTIx.XzwuRw.vIYl9ALqqI98tLh8OGoOq2TxQQ0"
 client = commands.Bot(command_prefix="wurf ", case_insensitive=True)
 
 #useful functions
@@ -40,16 +36,6 @@ def sortCrumbs(array):
     return array[1]
 
 
-#Restricted Python Context Manager
-@contextlib.contextmanager
-def stdoutIO(stdout=None):
-    old = sys.stdout
-    if stdout is None:
-        stdout = StringIO()
-    sys.stdout = stdout
-    yield stdout
-    sys.stdout = old
-
 
 #####################
 #Custom Status, startup
@@ -71,6 +57,15 @@ async def on_guild_join(guild):
 #Commands
 #####################
 
+
+#Custom help command
+class MyHelpCommand(commands.MinimalHelpCommand):
+    async def send_pages(self):
+        destination = self.get_destination()
+        e = discord.Embed(color=0xff4500, description='')
+        for page in self.paginator.pages:
+            e.description += page
+        await destination.send(embed=e)
 
 #Utility Category
 class Utility(commands.Cog):
@@ -187,11 +182,12 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
     
+    @commands.has_permissions(kick_members=True)
     @commands.command(
         help="Kicks members from your server. They can still come back",
-        brief="Kicks members from server."
+        brief="Kicks members from server.",
+        aliases=["softban"]
     )
-    @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member=None, *, reason="None specified"):
         if not(member):
             await ctx.channel.send(f"{ctx.message.author} yo you gotta tell me someone to kick right?")
@@ -222,17 +218,16 @@ class Moderation(commands.Cog):
                                         description="{}".format('\n'.join(m)))
                     await ctx.channel.send(embed=embed)
     
+    @commands.has_permissions(ban_members=True)
     @commands.command(
         help="Ban hammer go bam. User is now banned. They can't come back.",
         brief="Bans someone from your server."
     )
-    @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member = None, *, reason=None):
+    async def ban(self, ctx, member: discord.Member = None, *, reason="None Specified"):
         if not(member):
             await ctx.channel.send(f"{ctx.message.author} yo you gotta tell me someone to kick right?")
             return
         a = ctx.guild.roles
-        reason = 'None specified'
         a.reverse()
         for r in a:
             if r in member.roles:
@@ -286,6 +281,9 @@ class Moderation(commands.Cog):
         brief="Mute toxic people."
     )
     async def mute(self, ctx, member: discord.Member=None):
+        if member.id == ctx.message.author.id:
+            await ctx.channel.send(f"{ctx.message.author} WHAAAAT you want to mute yourself?")
+            return
         if not(member):
             await ctx.channel.send("Sure thing. But next time tell me who to mute, alright?")
             return
@@ -701,30 +699,7 @@ class Economy(commands.Cog):
                 await ctx.channel.send(f"{ctx.message.author}, you don't have a job yet. Get one by doing `wurf apply`")
         else:
             await ctx.channel.send(f"{ctx.message.author}, you don't have a balance yet. Get one by doing `wurf setup`")
-    
 
-    @commands.command(
-        help="Check out the richest people in your server!",
-        brief="Check out the rich leaderboard for your server.",
-        aliases=["leaderboard"]
-    )
-    async def rich(self, ctx):
-        memberList = []
-        for member in ctx.guild.members:
-            userId = member.id
-            test = haveFile(str(userId), "Users")
-            if test:
-                memberList.append(member)
-        for i in memberList:
-            userData = readFromFile("Users\\" + str(i.id) + ".json")
-            crumbs = userData["crumbs"]
-            memberList[memberList.index(i)] = (str(i.name)+"#"+str(i.discriminator), crumbs)
-        memberList.sort(reverse=True, key=sortCrumbs)
-        memberList = memberList[:10]
-        richList = [f"{i[0]} - {i[1]}" for i in memberList]
-        lineBreak = "\n"
-        await ctx.channel.send(f"Top 10 Richest people in {ctx.guild}: \n{lineBreak.join(richList)}")
-    
 
     @commands.command(
         help="Check out what we have in the store! Buy some stuff!",
@@ -807,7 +782,17 @@ class Economy(commands.Cog):
             await ctx.channel.send(f"{ctx.message.author}, you don't have a Bread Dog account yet. You can get one by typing `wurf setup`.")
 
 
+"""
+    @commands.command(
+        help="Sell stuff from you're inventory",
+        brief="Sell stuff for profit",
+        aliases=["pawn"]
+    )
+    async def sell(self, ctx, item:str=None, amount:int=1):
+"""
 
+
+client.help_command = MyHelpCommand()
 client.add_cog(Utility(client))
 client.add_cog(Extra(client))
 client.add_cog(Moderation(client))

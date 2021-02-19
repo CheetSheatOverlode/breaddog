@@ -7,3 +7,6 @@ Open source, feel free to use for your own purposes, but please give credit.
 
 def run(code):
     pass
+
+def scan(code):
+    lines = code.split("\n")
