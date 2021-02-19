@@ -8,7 +8,7 @@ from random import *
 import sys
 
 #initialize token and client
-TOKEN = "NzQ1MzY2MTAzNzA2MDQyNTIx.XzwuRw.vIYl9ALqqI98tLh8OGoOq2TxQQ0"
+TOKEN = os.environ["INSERT_TOKEN_HERE"]
 client = commands.Bot(command_prefix="wurf ", case_insensitive=True)
 
 #useful functions
@@ -336,7 +336,7 @@ class Economy(commands.Cog):
                 "pets":{},
                 "notifications":{}
             }
-            saveToFile("Users\\" + str(ctx.message.author.id) + ".json", userData)
+            saveToFile("Users/" + str(ctx.message.author.id) + ".json", userData)
             await ctx.channel.send(f"Set {ctx.message.author} up with 1000 bread crumbs!")
         else:
             await ctx.channel.send(f"{ctx.message.author}, don't try to cheat me! You already have an account! Use the other currency commands, like a normal person!")
@@ -356,7 +356,7 @@ class Economy(commands.Cog):
             member = ctx.message.author
             userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
-            userData = readFromFile("Users\\" + str(userId) + ".json")
+            userData = readFromFile("Users/" + str(userId) + ".json")
             balance = userData["crumbs"]
             await ctx.channel.send(f"{member}'s balance:\n{balance} bread crumbs.")
         else:
@@ -374,7 +374,7 @@ class Economy(commands.Cog):
     async def beg(self, ctx):
         userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
-            userData = readFromFile("Users\\" + str(ctx.message.author.id) + ".json")
+            userData = readFromFile("Users/" + str(ctx.message.author.id) + ".json")
             today = datetime.datetime.today()
             now = (int(today.year), int(today.month), int(today.day), int(today.hour), int(today.minute), int(today.second))
             lastBeg = datetime.datetime(userData["timeBeg"][0], userData["timeBeg"][1], userData["timeBeg"][2], userData["timeBeg"][3], userData["timeBeg"][4], userData["timeBeg"][5])
@@ -383,7 +383,7 @@ class Economy(commands.Cog):
                 userData["crumbs"] += amount
                 await ctx.channel.send(f"{ctx.message.author} begged in the streets and earned **{amount}** crumbs.")
                 userData["timeBeg"] = now
-                saveToFile("Users\\" + str(ctx.message.author.id) + ".json", userData)
+                saveToFile("Users/" + str(ctx.message.author.id) + ".json", userData)
             else:
                 await ctx.channel.send(f"{ctx.message.author}, you already begged in the last 5 minutes. Wait a bit.")
         else:
@@ -397,7 +397,7 @@ class Economy(commands.Cog):
     async def daily(self, ctx):
         userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
-            userData = readFromFile("Users\\" + str(ctx.message.author.id) + ".json")
+            userData = readFromFile("Users/" + str(ctx.message.author.id) + ".json")
             my_date = datetime.date.today()
             year, week, day = my_date.isocalendar()
             now = [year, week, day]
@@ -412,7 +412,7 @@ class Economy(commands.Cog):
                 else:
                     userData["dailyStreak"] = 0
                 userData["timeDaily"] = now
-                saveToFile("Users\\" + str(ctx.message.author.id) + ".json", userData)
+                saveToFile("Users/" + str(ctx.message.author.id) + ".json", userData)
             else:
                 await ctx.channel.send(f"{ctx.message.author}, you already got your daily. You can get one every day at 12 AM EST.")
                 return
@@ -427,7 +427,7 @@ class Economy(commands.Cog):
     async def weekly(self, ctx):
         userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
-            userData = readFromFile("Users\\" + str(ctx.message.author.id) + ".json")
+            userData = readFromFile("Users/" + str(ctx.message.author.id) + ".json")
             my_date = datetime.date.today()
             year, week, day = my_date.isocalendar()
             now = [year, week, day]
@@ -437,7 +437,7 @@ class Economy(commands.Cog):
                 userData["crumbs"] += amount
                 await ctx.channel.send(f"{ctx.message.author} got their weekly 5000 crumbs. It resets every Sunday at midnight, EST.")
                 userData["timeWeekly"] = now
-                saveToFile("Users\\" + str(ctx.message.author.id) + ".json", userData)
+                saveToFile("Users/" + str(ctx.message.author.id) + ".json", userData)
             else:
                 await ctx.channel.send(f"{ctx.message.author}, you already got your weekly. It resets every Sunday at midnight, EST.")
         else:
@@ -458,16 +458,16 @@ class Economy(commands.Cog):
             elif amount < 1:
                 await ctx.channel.send(f"{ctx.message.author} quit wasting my time. I gotta spend my energy handling REAL requests. Hmmmph.")
                 return
-            userData = readFromFile("Users\\" + str(ctx.message.author.id) + ".json")
+            userData = readFromFile("Users/" + str(ctx.message.author.id) + ".json")
             if userData["crumbs"] >= amount:
                 if randint(0, 1) == 1:
                     await ctx.channel.send(f"{ctx.message.author}, you won **{amount}** crumbs! NICE.")
                     userData["crumbs"] += amount
-                    saveToFile("Users\\" + str(ctx.message.author.id) + ".json", userData)
+                    saveToFile("Users/" + str(ctx.message.author.id) + ".json", userData)
                 else:
                     await ctx.channel.send(f"{ctx.message.author}, you lost **{amount}** crumbs. Haha sucks to be you.")
                     userData["crumbs"] -= amount
-                    saveToFile("Users\\" + str(ctx.message.author.id) + ".json", userData)
+                    saveToFile("Users/" + str(ctx.message.author.id) + ".json", userData)
             else:
                 await ctx.channel.send(f"{ctx.message.author}: Can't you do the math? You can't afford that bet. Go back to preschool smh.")
         else:
@@ -493,8 +493,8 @@ class Economy(commands.Cog):
             return
         if haveFile(str(userId), "Users"):
             if haveFile(str(targetId), "Users"):
-                userData = readFromFile("Users\\" + str(userId) + ".json")
-                targetData = readFromFile("Users\\" + str(targetId) + ".json")
+                userData = readFromFile("Users/" + str(userId) + ".json")
+                targetData = readFromFile("Users/" + str(targetId) + ".json")
                 if userData["crumbs"] >= 500:
                     if targetData["crumbs"] >= 500:
                         if "timeRob" not in userData:
@@ -512,24 +512,24 @@ class Economy(commands.Cog):
                             userData["crumbs"] += amount
                             userData["timeRob"] = now
                             targetData["notifications"][str(datetime.datetime.now())] = f"{ctx.message.author} stole {amount} crumbs from you in {ctx.message.guild}!"
-                            saveToFile("Users\\" + str(userId) + ".json", userData)
-                            saveToFile("Users\\" + str(targetId) + ".json", targetData)
+                            saveToFile("Users/" + str(userId) + ".json", userData)
+                            saveToFile("Users/" + str(targetId) + ".json", targetData)
                             await ctx.channel.send(f"{ctx.message.author} stole {amount} bread crumbs from {target}. HAHAHAHAHAHAHAHA")
                         else:
                             if userData["crumbs"] < 1000:
                                 userData["crumbs"] = 0
                                 userData["job"] = None
                                 targetData["notifications"][str(datetime.datetime.now())] = f"{ctx.message.author} tried to steal crumbs from you in {ctx.message.guild}, but failed!"
-                                saveToFile("Users\\" + str(userId) + ".json", userData)
-                                saveToFile("Users\\" + str(targetId) + ".json", targetData)
+                                saveToFile("Users/" + str(userId) + ".json", userData)
+                                saveToFile("Users/" + str(targetId) + ".json", targetData)
                                 await ctx.channel.send(f"{ctx.message.author} tried to rob {target}, but got busted by the cops.\nThey couldn't pay the bribe of 1000 bread crumbs, so they got shot and died. They lost all their money and their job.")
                             else:
                                 userData["crumbs"] *= 0.5
                                 userData["crumbs"] = int(userData["crumbs"])
                                 userData["job"] = None
                                 targetData["notifications"][str(datetime.datetime.now())] = f"{ctx.message.author} tried to steal crumbs from you in {ctx.message.guild}, but failed!"
-                                saveToFile("Users\\" + str(userId) + ".json", userData)
-                                saveToFile("Users\\" + str(targetId) + ".json", targetData)
+                                saveToFile("Users/" + str(userId) + ".json", userData)
+                                saveToFile("Users/" + str(targetId) + ".json", targetData)
                                 await ctx.channel.send(f"{ctx.message.author} tried to rob {target}, but got busted by the cops.\nThey had to pay the bribe to get out of jail. They lost half their money and their job.")
                     else:
                         await ctx.channel.send(f"{ctx.message.author}, your target {target} does not have 500 crumbs. Not worth it.")
@@ -549,7 +549,7 @@ class Economy(commands.Cog):
     async def notifications(self, ctx):
         userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
-            userData = readFromFile("Users\\" + str(userId) + ".json")
+            userData = readFromFile("Users/" + str(userId) + ".json")
             notifs = userData["notifications"]
             notification = {}
             for i in list(sorted(notifs.keys(), reverse=True)):
@@ -590,8 +590,8 @@ class Economy(commands.Cog):
             return
         if haveFile(str(userId), "Users"):
             if haveFile(str(targetId), "Users"):
-                userData = readFromFile("Users\\" + str(userId) + ".json")
-                targetData = readFromFile("Users\\" + str(targetId) + ".json")
+                userData = readFromFile("Users/" + str(userId) + ".json")
+                targetData = readFromFile("Users/" + str(targetId) + ".json")
                 if userData["crumbs"] < amount:
                     await ctx.channel.send(f"{ctx.message.author} Can't you do the math? You don't have enough crumbs. Hence, you can't send that many.")
                     return
@@ -602,15 +602,15 @@ class Economy(commands.Cog):
                         newAmount = int(amount*(100-percent)/100)
                         targetData["crumbs"] += newAmount
                         targetData["notifications"][str(datetime.datetime.now())] = f"{ctx.message.author} tried to send you {amount} crumbs in {ctx.message.guild}, but the shipment was attacked by pirates on the way, and only {newAmount} crumbs got to you!"
-                        saveToFile("Users\\" + str(userId) + ".json", userData)
-                        saveToFile("Users\\" + str(targetId) + ".json", targetData)
+                        saveToFile("Users/" + str(userId) + ".json", userData)
+                        saveToFile("Users/" + str(targetId) + ".json", targetData)
                         await ctx.channel.send(f"{ctx.message.author} tried to send {target} {amount} crumbs in {ctx.message.guild}, but the shipment was attacked by pirates on the way, and only {newAmount} crumbs got through!")
                     else:
                         userData["crumbs"] -= amount
                         targetData["crumbs"] += amount
                         targetData["notifications"][str(datetime.datetime.now())] = f"{ctx.message.author} sent you {amount} crumbs in {ctx.message.guild}!"
-                        saveToFile("Users\\" + str(userId) + ".json", userData)
-                        saveToFile("Users\\" + str(targetId) + ".json", targetData)
+                        saveToFile("Users/" + str(userId) + ".json", userData)
+                        saveToFile("Users/" + str(targetId) + ".json", targetData)
                         await ctx.channel.send(f"{ctx.message.author} successfully sent {target} {amount} crumbs!")
             else:
                 await ctx.channel.send(f"{ctx.message.author}, the person you're trying to give crumbs to doesn't have an account. Hence, they probably won't use it.")
@@ -635,7 +635,7 @@ class Economy(commands.Cog):
         ]
         userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
-            userData = readFromFile("Users\\" + str(userId) + ".json")
+            userData = readFromFile("Users/" + str(userId) + ".json")
             if not(job):
                 msg = []
                 for j in jobs:
@@ -653,7 +653,7 @@ class Economy(commands.Cog):
                     if userData["crumbs"] >= jobs[jobIndex][2]:
                         userData["crumbs"] -= jobs[jobIndex][2]
                         userData["job"] = jobs[jobIndex][0]
-                        saveToFile("Users\\" + str(userId) + ".json", userData)
+                        saveToFile("Users/" + str(userId) + ".json", userData)
                         await ctx.channel.send(f"{ctx.message.author} is now working as a **{jobs[jobIndex][0]}**!")
                     else:
                         await ctx.channel.send(f"{ctx.message.author}, can't you do the math? You can't afford to apply for that job!")
@@ -680,7 +680,7 @@ class Economy(commands.Cog):
         ]
         userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
-            userData = readFromFile("Users\\" + str(userId) + ".json")
+            userData = readFromFile("Users/" + str(userId) + ".json")
             if userData["job"]:
                 for i in jobs:
                     if i[0] == userData["job"]:
@@ -691,7 +691,7 @@ class Economy(commands.Cog):
                 if ((datetime.datetime(int(today.year), int(today.month), int(today.day), int(today.hour), int(today.minute), int(today.second)) - lastWork).total_seconds() / 3600) >= 1:
                     userData["crumbs"] += jobs[jobIndex][1]
                     userData["timeWork"] = now
-                    saveToFile("Users\\" + str(userId) + ".json", userData)
+                    saveToFile("Users/" + str(userId) + ".json", userData)
                     await ctx.channel.send(f"{ctx.message.author} worked for a **{jobs[jobIndex][0]}** for an hour, and earned **{jobs[jobIndex][1]}** coins.")
                 else:
                     await ctx.channel.send(f"{ctx.message.author}, you already worked this hour.")
@@ -741,7 +741,7 @@ class Economy(commands.Cog):
         if haveFile(str(userId), "Users"):
             if item:
                 if item in shopDict.keys():
-                    userData = readFromFile("Users\\" + str(userId) + ".json")
+                    userData = readFromFile("Users/" + str(userId) + ".json")
                     if userData["crumbs"] >= shopDict[item]*amount:
                         if item in userData["inventory"].keys():
                             userData["crumbs"] -= shopDict[item]*amount
@@ -750,7 +750,7 @@ class Economy(commands.Cog):
                             userData["crumbs"] -= shopDict[item]*amount
                             userData["inventory"][item] = 0
                             userData["inventory"][item] += amount
-                        saveToFile("Users\\" + str(userId) + ".json", userData)
+                        saveToFile("Users/" + str(userId) + ".json", userData)
                         await ctx.channel.send(f"{ctx.message.author} successfully purchased {amount} {item}")
                     else:
                         await ctx.channel.send(f"{ctx.message.author} broke kid get out you can't even afford what you're trying to buy ok")
@@ -770,7 +770,7 @@ class Economy(commands.Cog):
     async def inventory(self, ctx):
         userId = ctx.message.author.id
         if haveFile(str(userId), "Users"):
-            userData = readFromFile("Users\\" + str(userId) + ".json")
+            userData = readFromFile("Users/" + str(userId) + ".json")
             inv = userData["inventory"]
             invList = [f"{key} - {inv[key]}" for key in inv.keys()]
             invList.sort()
